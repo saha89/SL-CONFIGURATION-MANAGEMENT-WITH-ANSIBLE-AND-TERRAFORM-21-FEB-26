@@ -1,0 +1,45 @@
+---
+- name: Interactive Package Management
+  hosts: dbservers
+  become: yes
+
+  vars_prompt:
+
+    - name: package_name
+      prompt: "Enter the package name (example: htop, git, nginx)"
+      private: no
+
+    - name: operation
+      prompt: "Enter operation (install/remove)"
+      private: no
+      default: install
+
+  tasks:
+
+    - name: Validate operation input
+      fail:
+        msg: "Invalid operation! Please enter only 'install' or 'remove'."
+      when: operation not in ['install', 'remove']
+
+    - name: Update apt cache (only for install)
+      apt:
+        update_cache: yes
+      when: operation == "install"
+
+    - name: Install package
+      apt:
+        name: "{{ package_name }}"
+        state: present
+      when: operation == "install"
+
+    - name: Remove package
+      apt:
+        name: "{{ package_name }}"
+        state: absent
+        purge: yes
+      when: operation == "remove"
+
+    - name: Autoremove unused packages
+      apt:
+        autoremove: yes
+      when: operation == "remove"
