@@ -1,0 +1,8 @@
+---
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Debian Family
+      command: apt-get install apache2 -y
+    - name: RedHat Family
+      command: yum install httpd -y
