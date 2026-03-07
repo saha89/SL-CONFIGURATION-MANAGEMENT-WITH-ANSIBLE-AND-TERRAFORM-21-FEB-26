@@ -1,0 +1,27 @@
+---
+- name: Install and restart Apache2 using command module
+  hosts: webservers
+  become: yes
+
+  tasks:
+
+    - name: Update apt repository
+      command: apt-get update -y
+
+    - name: Install apache2 package
+      command: apt-get install -y apache2
+
+    - name: Change Apache Listen port in ports.conf (80 -> 8080)
+      command: sed -i 's/^Listen 80/Listen 9090/' /etc/apache2/ports.conf
+
+    - name: Change Apache VirtualHost port in default site (80 -> 8080)
+      command: sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:9090>/' /etc/apache2/sites-available/000-default.conf
+
+    - name: Start apache2 service
+      command: systemctl start apache2
+
+    - name: Enable apache2 on boot
+      command: systemctl enable apache2
+
+    - name: Restart apache2 service
+      command: systemctl restart apache2
