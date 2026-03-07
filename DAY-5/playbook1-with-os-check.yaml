@@ -1,0 +1,10 @@
+---
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Debian Family
+      command: apt-get install apache2 -y
+      when: ansible_os_family == "Debian"
+    - name: RedHat Family
+      command: yum install httpd -y
+      when: ansible_os_family == "RedHat"
